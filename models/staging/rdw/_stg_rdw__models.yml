@@ -1,0 +1,88 @@
+version: 2
+
+models:
+  - name: stg_rdw__voertuigen
+    description: >
+      Eén rij per kenteken, getypeerd en hernoemd. 1:1 met
+      rdw_gekentekende_voertuigen; geen filters, geen normalisatie.
+    columns:
+      - name: kenteken
+        description: Natuurlijke sleutel. Geen streepjes, hoofdletters.
+        data_tests: [unique, not_null]
+      - name: catalogusprijs
+        description: >
+          Nieuwprijs in hele euro's. In 52% van de rijen leeg — RDW levert hem
+          alleen voor personenauto's van na een bepaald bouwjaar.
+      - name: wam_verzekerd_status
+        description: >
+          Driewaardig: Ja / Nee / N.v.t. Bewust geen boolean; N.v.t. betekent
+          "geen verzekeringsplicht", niet "onverzekerd".
+      - name: vervaldatum_apk
+        description: Leeg voor 27,8% — voertuigen zonder APK-plicht.
+
+  - name: stg_rdw__brandstof
+    description: >
+      Eén rij per kenteken per brandstofvolgnummer. 12.671 voertuigen hebben er
+      meer dan één (hybrides); die worden in commit 7 een bridge.
+    data_tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns: [kenteken, brandstof_volgnummer]
+    columns:
+      - name: kenteken
+        data_tests:
+          - not_null
+          - relationships:
+              to: ref('stg_rdw__voertuigen')
+              field: kenteken
+      - name: brandstof_volgnummer
+        description: 1, 2 of 3. Volgnummer 1 is de hoofdbrandstof.
+        data_tests: [not_null]
+      - name: brandstofverbruik_gecombineerd
+        description: >
+          Liter per 100 km, decimaal. Double en niet integer — casten naar
+          integer rondt 7,3 stilzwijgend af naar 7.
+
+  - name: stg_rdw__gebrek_constateringen
+    description: >
+      Eén rij per geconstateerd gebrek per keuring per voertuig. Gededupliceerd:
+      de bron bevat één volledig dubbele rij (kenteken 02BND8, 2026-03-03 16:39,
+      gebrek 205), dus 1.333.713 in plaats van 1.333.714.
+    data_tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            [kenteken, meld_datum, meld_tijd, gebrek_identificatie]
+    columns:
+      - name: kenteken
+        data_tests:
+          - not_null
+          - relationships:
+              to: ref('stg_rdw__voertuigen')
+              field: kenteken
+      - name: meld_tijd
+        description: >
+          HHMM, links opgevuld met nullen. De bron levert 3 tekens voor tijden
+          vóór 10:00 ('953' = 09:53); zonder lpad sorteert 09:53 ná 10:00.
+        data_tests: [not_null]
+      - name: gebrek_identificatie
+        data_tests:
+          - not_null
+          - relationships:
+              to: ref('stg_rdw__gebreken')
+              field: gebrek_identificatie
+      - name: aantal_gebreken_keuring
+        description: >
+          NIET OPTELBAAR. Het aantal gebreken van de héle keuring, herhaald op
+          elke regel van die keuring. Een keuring met 4 gebreken levert 4 rijen
+          die élk 4 bevatten; sum() geeft 16 in plaats van 4. Tellen doe je met
+          count(*). Zie commit 9.
+
+  - name: stg_rdw__gebreken
+    description: >
+      Referentielijst van gebrekcodes, 1.006 stuks. Volledig — slechts 622 codes
+      komen daadwerkelijk voor in de constateringen. Test relationships altijd
+      van constatering naar deze lijst, nooit andersom.
+    columns:
+      - name: gebrek_identificatie
+        data_tests: [unique, not_null]
+      - name: einddatum_gebrek
+        description: Leeg (788 van 1.006) betekent "nog geldig", niet "onbekend".
