@@ -1,4 +1,4 @@
-# nl-open-data-warehouse
+# open-data-warehouse
 
 **End-to-end ELT-platform op Nederlandse open data, met een gedocumenteerd
 Kimball-sterschema.**

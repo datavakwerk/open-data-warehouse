@@ -21,7 +21,7 @@ Standaardrun: **2.807.740 rijen** over 23 bestanden, ~47 MB parquet (zstd).
 
 ### RDW
 
-| Bestand | Rijen | Korrel |
+| Bestand | Rijen | Grain |
 | --- | ---: | --- |
 | `rdw_gekentekende_voertuigen.parquet` | 500.000 | één rij per kenteken (98 kolommen) |
 | `rdw_geconstateerde_gebreken.parquet` | 1.333.714 | één rij per geconstateerd gebrek per keuring |
@@ -30,7 +30,7 @@ Standaardrun: **2.807.740 rijen** over 23 bestanden, ~47 MB parquet (zstd).
 
 ### CBS
 
-| Bestand | Rijen | Korrel |
+| Bestand | Rijen | Grain |
 | --- | ---: | --- |
 | `cbs_70072ned_motorvoertuigen_gemeente.parquet` | 213.101 | regio × peiljaar × maat (lang formaat) |
 | `cbs_85237ned_personenautos_brandstof.parquet` | 80.592 | bouwjaar × periode × maat (lang formaat) |
@@ -83,8 +83,8 @@ hoort een letterlijke kopie van de bron te zijn.
 
 ## Bekende beperking: brandstof per gemeente bestaat niet bij CBS
 
-De README beschrijft `fct_voertuigpark_gemeente` met de korrel *gemeente per peiljaar
-per brandstofsoort*. Die korrel is bij CBS niet te maken:
+De README beschrijft `fct_voertuigpark_gemeente` met de grain *gemeente per peiljaar
+per brandstofsoort*. Die grain is bij CBS niet te maken:
 
 - De tabellen **Motorvoertuigenpark** (`85235NED`, `7374hvv`) gaan niet lager dan
   provincie — ze bevatten geen enkele gemeentecode.
