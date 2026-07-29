@@ -126,7 +126,7 @@ def ingest_kerncijfers(session, datum: str) -> None:
         log(f"  {m['Identifier']:<12} {m['Title']}")
 
     measure_filter = " or ".join(f"Measure eq '{m['Identifier']}'" for m in gekozen)
-    # Gemeenten voor de gemeentekorrel, provincie en NL als controletotaal.
+    # Gemeenten voor de gemeentegrain, provincie en NL als controletotaal.
     regio_filter = "(startswith(RegioS,'GM') or startswith(RegioS,'PV') or RegioS eq 'NL01')"
     odata_filter = f"({measure_filter}) and {regio_filter}"
 
@@ -151,7 +151,7 @@ def ingest_kerncijfers(session, datum: str) -> None:
             "selectiequery": {"$filter": odata_filter},
             "rijen": geschreven,
             "kolommen": len(columns),
-            "korrel": "regio x peiljaar x maat (lang formaat)",
+            "grain": "regio x peiljaar x maat (lang formaat)",
         }
     )
 
