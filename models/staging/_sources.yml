@@ -1,0 +1,83 @@
+version: 2
+
+sources:
+  # DuckDB leest parquet rechtstreeks: geen seeds, geen kopie in de database.
+  # `external_location` is een template; dbt-duckdb vult `{name}` met de tabelnaam,
+  # dus source('rdw', 'brandstof') wordt data/raw/rdw_brandstof.parquet.
+  #
+  # DBT_RAW_DIR maakt de bronmap verwisselbaar. Lokaal is dat data/raw/, in CI
+  # tests/fixtures/ (commit 3). Alle kolommen zijn VARCHAR — typeren hoort in staging.
+
+  - name: rdw
+    description: >
+      RDW open data (Socrata), opgehaald door `make ingest-rdw`. Eén kentekenbereik voor
+      alle drie de grote sets, zodat feiten en dimensies dezelfde populatie beschrijven.
+      Zie docs/data.md.
+    meta:
+      external_location: "{{ env_var('DBT_RAW_DIR', 'data/raw') }}/rdw_{name}.parquet"
+    tables:
+      - name: gekentekende_voertuigen
+        description: Eén rij per kenteken, 98 kolommen. Dataset `m9d7-ebf2`.
+      - name: brandstof
+        description: Eén rij per kenteken per brandstofvolgnummer. Dataset `8ys7-d773`.
+      - name: geconstateerde_gebreken
+        description: >
+          Eén rij per geconstateerd gebrek per keuring. Dataset `a34c-vvps`. Bevat één
+          rij die op alle acht kolommen dubbel is; dedup gebeurt in staging.
+      - name: gebreken
+        description: >
+          Referentielijst van gebrekcodes (1.006 rijen). Dataset `hx2c-gt7k`. Volledig,
+          dus niet elke code komt voor in de constateringen.
+
+  - name: cbs
+    description: >
+      CBS StatLine (odata v1), opgehaald door `make ingest-cbs`. Observaties in lang
+      formaat met codes in plaats van labels; de measure-/regio-/periodetabellen zijn
+      de bijbehorende codelijsten.
+    meta:
+      external_location: "{{ env_var('DBT_RAW_DIR', 'data/raw') }}/cbs_{name}.parquet"
+    tables:
+      - name: 70072ned_motorvoertuigen_gemeente
+        description: >
+          Regionale kerncijfers, grain regio × periode × maat. Bevat gemeentecodes
+          (`GM….`) over 1995–2026 en splitst motorvoertuigen naar soort, niet naar
+          brandstof.
+      - name: 70072ned_measurecodes
+        description: Codelijst bij `70072ned`; `Identifier` sluit aan op `Measure`.
+      - name: 70072ned_regiocodes
+        description: Codelijst bij `70072ned`; `Identifier` sluit aan op `RegioS`.
+      - name: 70072ned_periodencodes
+        description: Codelijst bij `70072ned`; `Identifier` sluit aan op `Perioden`.
+
+      - name: 85237ned_personenautos_brandstof
+        description: >
+          Personenauto's naar brandstof, grain bouwjaar × periode × maat. Gaat niet
+          lager dan provincie. Opgehaald maar nog ongebruikt.
+      - name: 85237ned_measurecodes
+        description: Codelijst bij `85237NED`.
+
+      - name: gebieden_measurecodes
+        description: >
+          Codelijst bij `Gebieden in Nederland`. Onder meer `GM000B` (gemeentecode),
+          `GM000C_1` (gemeentenaam), `AM0002` (agglomeratie), `AR0002`
+          (arbeidsmarktregio).
+
+      # Twaalf losse jaarbestanden, hier als één relatie. `filename=true` levert het
+      # bronbestand als kolom, en daar komt het peiljaar uit — dat verschil tussen twee
+      # opeenvolgende jaren ís de herindeling die dim_gemeente moet vastleggen.
+      #
+      # Het jaartal-patroon is nodig: een `gebieden_*`-glob zou ook
+      # cbs_gebieden_measurecodes.parquet oppakken, en dat bestand heeft een heel
+      # ander schema.
+      - name: gebieden
+        description: >
+          Gebieden in Nederland, peiljaren 2015–2026 samengevoegd. Grain regio × maat ×
+          peiljaar. `filename` bevat het bronbestand, waaruit het peiljaar volgt.
+          `StringValue` is opgevuld tot vaste breedte — `trim()` vóór elke join.
+        meta:
+          external_location: >-
+            read_parquet(
+              '{{ env_var('DBT_RAW_DIR', 'data/raw') }}/cbs_gebieden_[0-9][0-9][0-9][0-9].parquet',
+              filename = true,
+              union_by_name = true
+            )
