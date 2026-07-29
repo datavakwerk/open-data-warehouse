@@ -13,3 +13,5 @@ target/
 dbt_packages/
 logs/
 .user.yml
+
+.ipynb_checkpoints/

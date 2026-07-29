@@ -25,7 +25,7 @@
       },
       "rijen": 213101,
       "kolommen": 7,
-      "korrel": "regio x peiljaar x maat (lang formaat)"
+      "grain": "regio x peiljaar x maat (lang formaat)"
     },
     {
       "bestand": "cbs_70072ned_periodencodes.parquet",

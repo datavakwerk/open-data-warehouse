@@ -21,15 +21,15 @@ Twee publieke bronnen, allebei zonder API-sleutel te bevragen:
 | [CBS StatLine](https://opendata.cbs.nl) (odata) | motorvoertuigenpark en gemeentelijke indeling | snapshotfeit + gemeentedimensie |
 
 De combinatie is bewust gekozen: RDW levert feiten op recordniveau, CBS levert een
-periodieke snapshot op gemeenteniveau. Twee feiten met een verschillende korrel in
+periodieke snapshot op gemeenteniveau. Twee feiten met een verschillende grain in
 één schema is precies waar dimensioneel modelleren over gaat — en waar het misgaat
-als je de korrel niet expliciet maakt.
+als je de grain niet expliciet maakt.
 
 Elke ingestie legt een **snapshotdatum** vast en de selectiequery staat in de repo,
 zodat een run reproduceerbaar is.
 
 Zie **[docs/data.md](docs/data.md)** voor wat er precies wordt opgehaald: de dataset-id's,
-de korrel per bestand, de steekproefopzet en de controles daarop. De data zelf staat niet
+de grain per bestand, de steekproefopzet en de controles daarop. De data zelf staat niet
 in git — `make ingest` haalt hem op.
 
 ## Architectuur
@@ -64,9 +64,9 @@ DuckDB-specifieke SQL buiten `staging/`).
 
 ## Het sterschema
 
-Per feittabel staat de **korrel** expliciet — één zin, geen interpretatie mogelijk.
+Per feittabel staat de **grain** expliciet — één zin, geen interpretatie mogelijk.
 
-| Feittabel | Korrel (één rij per …) | Type | Dimensies |
+| Feittabel | grain (één rij per …) | Type | Dimensies |
 | --- | --- | --- | --- |
 | `fct_voertuig_registratie` | kenteken per tenaamstelling | transactie | datum, voertuigtype, brandstof |
 | `fct_gebrek_constatering` | geconstateerd gebrek per keuring per voertuig | transactie | datum, voertuigtype, gebrek |
@@ -93,7 +93,7 @@ make docs        # dbt docs generate && serve
 
 ## Ontwerpkeuzes
 
-- **Waarom deze korrel.** `fct_voertuig_registratie` staat op tenaamstelling, niet op
+- **Waarom deze grain.** `fct_voertuig_registratie` staat op tenaamstelling, niet op
   voertuig: een voertuig wisselt van eigenaar en dat is precies de gebeurtenis die je
   wilt kunnen tellen. Op voertuigniveau verlies je die.
 - **Waarom SCD2 op gemeente.** Nederland herindeelt gemiddeld elk jaar wel iets. Zonder
@@ -119,12 +119,12 @@ Bij elke pull request draait GitHub Actions:
 
 dbt-tests: `unique` en `not_null` op elke sleutel, `relationships` van elke
 foreign key naar de dimensie, `accepted_values` op de referentiekolommen, plus
-eigen tests op de korrel (geen dubbele rijen per korreldefinitie).
+eigen tests op de grain (geen dubbele rijen per graindefinitie).
 
 ## Definition of done
 
 - [ ] Repo met ingestie + dbt-project, end-to-end draaibaar met één `make`-commando
-- [ ] ≥ 2 feittabellen en ≥ 4 dimensies, korrel gedocumenteerd per feittabel
+- [ ] ≥ 2 feittabellen en ≥ 4 dimensies, grain gedocumenteerd per feittabel
 - [ ] dbt-tests groen in GitHub Actions bij elke PR
 - [ ] README met architectuurdiagram, lineage-screenshot en ontwerpkeuzes
 - [ ] Evidence- of Streamlit-pagina over de marts (optioneel)
