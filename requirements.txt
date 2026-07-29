@@ -1,0 +1,3 @@
+# Directe dependencies van de ingestie. Gepind zodat een run reproduceerbaar is.
+pyarrow==21.0.0
+requests==2.32.5

@@ -1,0 +1,325 @@
+{
+  "datasets": [
+    {
+      "bestand": "cbs_70072ned_measurecodes.parquet",
+      "bron": "CBS StatLine",
+      "omschrijving": "maatcodes bij 70072ned",
+      "dataset_id": "70072ned",
+      "url": "https://datasets.cbs.nl/odata/v1/CBS/70072ned/MeasureCodes",
+      "snapshotdatum": "2026-07-29",
+      "selectiequery": {
+        "$filter": null
+      },
+      "rijen": 315,
+      "kolommen": 9
+    },
+    {
+      "bestand": "cbs_70072ned_motorvoertuigen_gemeente.parquet",
+      "bron": "CBS StatLine",
+      "omschrijving": "Regionale kerncijfers: motorvoertuigenpark per gemeente per peiljaar",
+      "dataset_id": "70072ned",
+      "url": "https://datasets.cbs.nl/odata/v1/CBS/70072ned/Observations",
+      "snapshotdatum": "2026-07-29",
+      "selectiequery": {
+        "$filter": "(Measure eq 'M000352_3' or Measure eq 'A018943_1' or Measure eq 'A018943_2' or Measure eq 'M000330_1' or Measure eq 'M000330_2' or Measure eq 'A018930' or Measure eq 'A018944_1' or Measure eq 'A018944_2' or Measure eq 'A018934_1' or Measure eq 'A018934_2') and (startswith(RegioS,'GM') or startswith(RegioS,'PV') or RegioS eq 'NL01')"
+      },
+      "rijen": 213101,
+      "kolommen": 7,
+      "korrel": "regio x peiljaar x maat (lang formaat)"
+    },
+    {
+      "bestand": "cbs_70072ned_periodencodes.parquet",
+      "bron": "CBS StatLine",
+      "omschrijving": "periodecodes bij 70072ned",
+      "dataset_id": "70072ned",
+      "url": "https://datasets.cbs.nl/odata/v1/CBS/70072ned/PeriodenCodes",
+      "snapshotdatum": "2026-07-29",
+      "selectiequery": {
+        "$filter": null
+      },
+      "rijen": 32,
+      "kolommen": 6
+    },
+    {
+      "bestand": "cbs_70072ned_regiocodes.parquet",
+      "bron": "CBS StatLine",
+      "omschrijving": "regiocodes bij 70072ned",
+      "dataset_id": "70072ned",
+      "url": "https://datasets.cbs.nl/odata/v1/CBS/70072ned/RegioSCodes",
+      "snapshotdatum": "2026-07-29",
+      "selectiequery": {
+        "$filter": null
+      },
+      "rijen": 785,
+      "kolommen": 5
+    },
+    {
+      "bestand": "cbs_85237ned_measurecodes.parquet",
+      "bron": "CBS StatLine",
+      "omschrijving": "maatcodes bij 85237NED (bevat zowel regio als brandstof)",
+      "dataset_id": "85237NED",
+      "url": "https://datasets.cbs.nl/odata/v1/CBS/85237NED/MeasureCodes",
+      "snapshotdatum": "2026-07-29",
+      "selectiequery": {
+        "$filter": null
+      },
+      "rijen": 69,
+      "kolommen": 9
+    },
+    {
+      "bestand": "cbs_85237ned_personenautos_brandstof.parquet",
+      "bron": "CBS StatLine",
+      "omschrijving": "Personenauto's actief naar brandstof en bouwjaar (regio = provincie)",
+      "dataset_id": "85237NED",
+      "url": "https://datasets.cbs.nl/odata/v1/CBS/85237NED/Observations",
+      "snapshotdatum": "2026-07-29",
+      "selectiequery": {
+        "$filter": null
+      },
+      "rijen": 80592,
+      "kolommen": 7,
+      "let_op": "brandstofsplitsing is bij CBS alleen beschikbaar tot provincieniveau"
+    },
+    {
+      "bestand": "cbs_gebieden_2015.parquet",
+      "bron": "CBS StatLine",
+      "omschrijving": "Gebieden in Nederland 2015 (gemeentelijke indeling)",
+      "dataset_id": "82949NED",
+      "url": "https://datasets.cbs.nl/odata/v1/CBS/82949NED/Observations",
+      "snapshotdatum": "2026-07-29",
+      "peiljaar": 2015,
+      "selectiequery": {
+        "$filter": null
+      },
+      "rijen": 22401,
+      "kolommen": 6
+    },
+    {
+      "bestand": "cbs_gebieden_2016.parquet",
+      "bron": "CBS StatLine",
+      "omschrijving": "Gebieden in Nederland 2016 (gemeentelijke indeling)",
+      "dataset_id": "83287NED",
+      "url": "https://datasets.cbs.nl/odata/v1/CBS/83287NED/Observations",
+      "snapshotdatum": "2026-07-29",
+      "peiljaar": 2016,
+      "selectiequery": {
+        "$filter": null
+      },
+      "rijen": 20670,
+      "kolommen": 6
+    },
+    {
+      "bestand": "cbs_gebieden_2017.parquet",
+      "bron": "CBS StatLine",
+      "omschrijving": "Gebieden in Nederland 2017 (gemeentelijke indeling)",
+      "dataset_id": "83553NED",
+      "url": "https://datasets.cbs.nl/odata/v1/CBS/83553NED/Observations",
+      "snapshotdatum": "2026-07-29",
+      "peiljaar": 2017,
+      "selectiequery": {
+        "$filter": null
+      },
+      "rijen": 19012,
+      "kolommen": 6
+    },
+    {
+      "bestand": "cbs_gebieden_2018.parquet",
+      "bron": "CBS StatLine",
+      "omschrijving": "Gebieden in Nederland 2018 (gemeentelijke indeling)",
+      "dataset_id": "83859NED",
+      "url": "https://datasets.cbs.nl/odata/v1/CBS/83859NED/Observations",
+      "snapshotdatum": "2026-07-29",
+      "peiljaar": 2018,
+      "selectiequery": {
+        "$filter": null
+      },
+      "rijen": 21660,
+      "kolommen": 6
+    },
+    {
+      "bestand": "cbs_gebieden_2019.parquet",
+      "bron": "CBS StatLine",
+      "omschrijving": "Gebieden in Nederland 2019 (gemeentelijke indeling)",
+      "dataset_id": "84378NED",
+      "url": "https://datasets.cbs.nl/odata/v1/CBS/84378NED/Observations",
+      "snapshotdatum": "2026-07-29",
+      "peiljaar": 2019,
+      "selectiequery": {
+        "$filter": null
+      },
+      "rijen": 18105,
+      "kolommen": 6
+    },
+    {
+      "bestand": "cbs_gebieden_2020.parquet",
+      "bron": "CBS StatLine",
+      "omschrijving": "Gebieden in Nederland 2020 (gemeentelijke indeling)",
+      "dataset_id": "84721NED",
+      "url": "https://datasets.cbs.nl/odata/v1/CBS/84721NED/Observations",
+      "snapshotdatum": "2026-07-29",
+      "peiljaar": 2020,
+      "selectiequery": {
+        "$filter": null
+      },
+      "rijen": 18815,
+      "kolommen": 6
+    },
+    {
+      "bestand": "cbs_gebieden_2021.parquet",
+      "bron": "CBS StatLine",
+      "omschrijving": "Gebieden in Nederland 2021 (gemeentelijke indeling)",
+      "dataset_id": "84929NED",
+      "url": "https://datasets.cbs.nl/odata/v1/CBS/84929NED/Observations",
+      "snapshotdatum": "2026-07-29",
+      "peiljaar": 2021,
+      "selectiequery": {
+        "$filter": null
+      },
+      "rijen": 18656,
+      "kolommen": 6
+    },
+    {
+      "bestand": "cbs_gebieden_2022.parquet",
+      "bron": "CBS StatLine",
+      "omschrijving": "Gebieden in Nederland 2022 (gemeentelijke indeling)",
+      "dataset_id": "85067NED",
+      "url": "https://datasets.cbs.nl/odata/v1/CBS/85067NED/Observations",
+      "snapshotdatum": "2026-07-29",
+      "peiljaar": 2022,
+      "selectiequery": {
+        "$filter": null
+      },
+      "rijen": 18975,
+      "kolommen": 6
+    },
+    {
+      "bestand": "cbs_gebieden_2023.parquet",
+      "bron": "CBS StatLine",
+      "omschrijving": "Gebieden in Nederland 2023 (gemeentelijke indeling)",
+      "dataset_id": "85385NED",
+      "url": "https://datasets.cbs.nl/odata/v1/CBS/85385NED/Observations",
+      "snapshotdatum": "2026-07-29",
+      "peiljaar": 2023,
+      "selectiequery": {
+        "$filter": null
+      },
+      "rijen": 19494,
+      "kolommen": 6
+    },
+    {
+      "bestand": "cbs_gebieden_2024.parquet",
+      "bron": "CBS StatLine",
+      "omschrijving": "Gebieden in Nederland 2024 (gemeentelijke indeling)",
+      "dataset_id": "85755NED",
+      "url": "https://datasets.cbs.nl/odata/v1/CBS/85755NED/Observations",
+      "snapshotdatum": "2026-07-29",
+      "peiljaar": 2024,
+      "selectiequery": {
+        "$filter": null
+      },
+      "rijen": 19494,
+      "kolommen": 6
+    },
+    {
+      "bestand": "cbs_gebieden_2025.parquet",
+      "bron": "CBS StatLine",
+      "omschrijving": "Gebieden in Nederland 2025 (gemeentelijke indeling)",
+      "dataset_id": "86059NED",
+      "url": "https://datasets.cbs.nl/odata/v1/CBS/86059NED/Observations",
+      "snapshotdatum": "2026-07-29",
+      "peiljaar": 2025,
+      "selectiequery": {
+        "$filter": null
+      },
+      "rijen": 19494,
+      "kolommen": 6
+    },
+    {
+      "bestand": "cbs_gebieden_2026.parquet",
+      "bron": "CBS StatLine",
+      "omschrijving": "Gebieden in Nederland 2026 (gemeentelijke indeling)",
+      "dataset_id": "86247NED",
+      "url": "https://datasets.cbs.nl/odata/v1/CBS/86247NED/Observations",
+      "snapshotdatum": "2026-07-29",
+      "peiljaar": 2026,
+      "selectiequery": {
+        "$filter": null
+      },
+      "rijen": 18126,
+      "kolommen": 6
+    },
+    {
+      "bestand": "cbs_gebieden_measurecodes.parquet",
+      "bron": "CBS StatLine",
+      "omschrijving": "maatcodes bij Gebieden in Nederland (2026)",
+      "dataset_id": "86247NED",
+      "url": "https://datasets.cbs.nl/odata/v1/CBS/86247NED/MeasureCodes",
+      "snapshotdatum": "2026-07-29",
+      "selectiequery": {
+        "$filter": null
+      },
+      "rijen": 57,
+      "kolommen": 9
+    },
+    {
+      "bestand": "rdw_brandstof.parquet",
+      "bron": "RDW open data",
+      "omschrijving": "RDW gekentekende voertuigen brandstof",
+      "dataset_id": "8ys7-d773",
+      "url": "https://opendata.rdw.nl/resource/8ys7-d773.json",
+      "snapshotdatum": "2026-07-29",
+      "selectiequery": {
+        "$order": "kenteken,brandstof_volgnummer",
+        "$where": "kenteken >= '0001TJ' AND kenteken <= '10ZFXT'"
+      },
+      "rijen": 443167,
+      "rijen_in_bron_bij_selectie": 443167,
+      "kolommen": 36
+    },
+    {
+      "bestand": "rdw_gebreken.parquet",
+      "bron": "RDW open data",
+      "omschrijving": "RDW gebrekcodes met omschrijving (volledige referentielijst)",
+      "dataset_id": "hx2c-gt7k",
+      "url": "https://opendata.rdw.nl/resource/hx2c-gt7k.json",
+      "snapshotdatum": "2026-07-29",
+      "selectiequery": {
+        "$order": "gebrek_identificatie",
+        "$where": null
+      },
+      "rijen": 1006,
+      "rijen_in_bron_bij_selectie": 1006,
+      "kolommen": 8
+    },
+    {
+      "bestand": "rdw_geconstateerde_gebreken.parquet",
+      "bron": "RDW open data",
+      "omschrijving": "RDW geconstateerde gebreken",
+      "dataset_id": "a34c-vvps",
+      "url": "https://opendata.rdw.nl/resource/a34c-vvps.json",
+      "snapshotdatum": "2026-07-29",
+      "selectiequery": {
+        "$order": "kenteken,meld_datum_door_keuringsinstantie",
+        "$where": "kenteken >= '0001TJ' AND kenteken <= '10ZFXT'"
+      },
+      "rijen": 1333714,
+      "rijen_in_bron_bij_selectie": 1333714,
+      "kolommen": 8
+    },
+    {
+      "bestand": "rdw_gekentekende_voertuigen.parquet",
+      "bron": "RDW open data",
+      "omschrijving": "RDW gekentekende voertuigen",
+      "dataset_id": "m9d7-ebf2",
+      "url": "https://opendata.rdw.nl/resource/m9d7-ebf2.json",
+      "snapshotdatum": "2026-07-29",
+      "selectiequery": {
+        "$order": "kenteken",
+        "$where": "kenteken >= '0001TJ' AND kenteken <= '10ZFXT'"
+      },
+      "rijen": 500000,
+      "rijen_in_bron_bij_selectie": 500000,
+      "kolommen": 98
+    }
+  ]
+}

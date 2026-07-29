@@ -1,0 +1,14 @@
+# Data gaat niet mee in git; `make ingest` haalt een verse snapshot op.
+# Het manifest wel: dat legt vast welke snapshot een run gebruikte.
+data/raw/*
+!data/raw/_manifest.json
+
+.venv/
+__pycache__/
+*.pyc
+
+*.duckdb
+*.duckdb.wal
+target/
+dbt_packages/
+logs/
