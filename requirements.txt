@@ -1,3 +1,5 @@
+# lintgereedschap staat in requirements-dev.txt
+
 agate==1.9.1
 annotated-types==0.7.0
 attrs==26.1.0

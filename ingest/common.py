@@ -10,8 +10,8 @@ from __future__ import annotations
 import json
 import sys
 import time
+from collections.abc import Iterable, Iterator, Sequence
 from pathlib import Path
-from typing import Iterable, Iterator, Sequence
 
 import pyarrow as pa
 import pyarrow.parquet as pq

@@ -23,7 +23,6 @@ bijbehorende code-tabellen worden meegeleverd, anders is een observatie niet te 
 from __future__ import annotations
 
 import argparse
-from pathlib import Path
 
 from common import (
     RAW_DIR,
@@ -66,8 +65,7 @@ def fetch_all(session, url: str, params: dict | None = None):
         payload = get_json(session, url, params)
         params = None  # nextLink bevat de parameters al
         rows = payload.get("value", [])
-        for row in rows:
-            yield row
+        yield from rows
         total += len(rows)
         if total:
             log(f"    {total:,} rijen")
