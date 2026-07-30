@@ -14,7 +14,6 @@ zolang de bron niet wijzigt. Het bereik zelf komt in data/raw/_manifest.json te 
 from __future__ import annotations
 
 import argparse
-from pathlib import Path
 
 from common import (
     RAW_DIR,

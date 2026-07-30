@@ -1,0 +1,16 @@
+# Alleen gereedschapsconfiguratie — dit project is geen distribueerbaar package.
+# Er staat dus bewust geen [project]-sectie in.
+
+[tool.ruff]
+# 100 sluit aan op de bestaande ingestiecode; op de standaard 88 is die meteen rood.
+line-length = 100
+# De versie van .venv (python3.9). Zet je hier py311, dan stelt UP moderniseringen
+# voor die je lokaal niet kunt draaien.
+target-version = "py39"
+extend-exclude = ["target", "dbt_packages", "logs", "notebooks"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP"]
+
+[tool.ruff.lint.isort]
+known-first-party = ["ingest"]

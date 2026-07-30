@@ -1,0 +1,67 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+env:
+  # Alle dbt-commando's lezen tests/fixtures/ in plaats van data/raw/ — die staat niet
+  # in git. Zie models/staging/_sources.yml, waar DBT_RAW_DIR wordt uitgelezen.
+  DBT_RAW_DIR: tests/fixtures
+  # profiles.yml staat in de repowortel, niet in ~/.dbt/. Zo hoeft geen enkel
+  # commando --profiles-dir mee te geven.
+  DBT_PROFILES_DIR: .
+  DBT_SEND_ANONYMOUS_USAGE_STATS: "false"
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+          cache-dependency-path: |
+            requirements.txt
+            requirements-dev.txt
+
+      - name: Dependencies installeren
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt -r requirements-dev.txt
+
+      # Snelste stap eerst: een tikfout in Python hoeft geen dbt-run te kosten.
+      - name: Lint Python
+        run: ruff check .
+
+      # Vóór sqlfluff: de dbt-templater compileert de modellen echt en heeft dbt_utils
+      # nodig, anders faalt hij op elke {{ dbt_utils.* }}.
+      - name: dbt deps
+        run: dbt deps
+
+      - name: Lint SQL
+        run: sqlfluff lint models
+
+      - name: dbt build
+        run: dbt build --target ci
+
+      - name: dbt docs
+        run: dbt docs generate --target ci --static
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: dbt-docs
+          path: |
+            target/static_index.html
+            target/manifest.json
+          if-no-files-found: error

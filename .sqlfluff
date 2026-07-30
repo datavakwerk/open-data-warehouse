@@ -1,0 +1,36 @@
+# templater = dbt compileert de modellen echt, dus {{ ref() }} en {{ dbt_utils.* }}
+# worden gelint zoals DuckDB ze ziet. Dat vereist sqlfluff-templater-dbt én een
+# uitgevoerde `dbt deps`.
+[sqlfluff]
+templater = dbt
+dialect = duckdb
+max_line_length = 100
+exclude_rules = RF01, ST06
+
+[sqlfluff:templater:dbt]
+project_dir = .
+profiles_dir = .
+target = ci
+
+[sqlfluff:indentation]
+tab_space_size = 4
+indented_joins = false
+indented_using_on = true
+
+# De staging-modellen zetten aliassen onder elkaar uit. Zonder deze regel ziet
+# sqlfluff die uitlijning als "meer dan één spatie" en herschrijft hij ze allemaal.
+[sqlfluff:layout:type:alias_expression]
+spacing_before = align
+align_within = select_clause
+
+[sqlfluff:rules:capitalisation.keywords]
+capitalisation_policy = lower
+
+[sqlfluff:rules:capitalisation.identifiers]
+extended_capitalisation_policy = lower
+
+[sqlfluff:rules:capitalisation.functions]
+extended_capitalisation_policy = lower
+
+[sqlfluff:rules:capitalisation.literals]
+capitalisation_policy = lower

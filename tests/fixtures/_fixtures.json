@@ -1,0 +1,36 @@
+{
+  "aantal_kentekens": 5000,
+  "extra_kentekens": [
+    "02BND8"
+  ],
+  "kenteken_grens": "02BND8",
+  "eerste_peiljaar": 2015,
+  "snapshotdatum_bron": [
+    "2026-07-29"
+  ],
+  "rijen": {
+    "cbs_70072ned_measurecodes.parquet": 315,
+    "cbs_70072ned_motorvoertuigen_gemeente.parquet": 87360,
+    "cbs_70072ned_periodencodes.parquet": 32,
+    "cbs_70072ned_regiocodes.parquet": 785,
+    "cbs_85237ned_measurecodes.parquet": 69,
+    "cbs_85237ned_personenautos_brandstof.parquet": 80592,
+    "cbs_gebieden_2015.parquet": 22401,
+    "cbs_gebieden_2016.parquet": 20670,
+    "cbs_gebieden_2017.parquet": 19012,
+    "cbs_gebieden_2018.parquet": 21660,
+    "cbs_gebieden_2019.parquet": 18105,
+    "cbs_gebieden_2020.parquet": 18815,
+    "cbs_gebieden_2021.parquet": 18656,
+    "cbs_gebieden_2022.parquet": 18975,
+    "cbs_gebieden_2023.parquet": 19494,
+    "cbs_gebieden_2024.parquet": 19494,
+    "cbs_gebieden_2025.parquet": 19494,
+    "cbs_gebieden_2026.parquet": 18126,
+    "cbs_gebieden_measurecodes.parquet": 57,
+    "rdw_brandstof.parquet": 4600,
+    "rdw_gebreken.parquet": 1006,
+    "rdw_geconstateerde_gebreken.parquet": 16670,
+    "rdw_gekentekende_voertuigen.parquet": 5001
+  }
+}
