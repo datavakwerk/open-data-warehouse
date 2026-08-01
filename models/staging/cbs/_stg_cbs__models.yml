@@ -1,0 +1,51 @@
+version: 2
+
+models:
+  - name: stg_cbs__voertuigpark_gemeente
+    description: >
+      Eén rij per gemeente per peiljaar per voertuigsoort, lang formaat.
+      Filtert bewust op vier maten: de bron bevat meer maten in hetzelfde
+      bestand, die horen bij een andere korrel. Rijen zonder Value zijn
+      gemeenten die dat peiljaar niet bestonden.
+    data_tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns: [gemeente_code, peiljaar, voertuigsoort]
+    columns:
+      - name: gemeente_code
+        data_tests: [not_null]
+      - name: peiljaar
+        description: Uit Perioden; de bron kent alleen jaarperioden (JJ00).
+        data_tests: [not_null]
+      - name: voertuigsoort
+        data_tests:
+          - not_null
+          - accepted_values:
+              values: [Personenauto, Bedrijfsmotorvoertuig, Motorfiets, Bromfiets]
+      - name: aantal
+        description: >
+          Value staat in de bron als '268240.0'. Cast naar double en dan pas
+          naar int; direct naar int klapt op de punt.
+        data_tests: [not_null]
+
+  - name: stg_cbs__gemeenten
+    description: >
+      Eén rij per gemeente per peiljaar, 4.326 rijen over 2015-2026.
+      Gepivoteerd uit lang formaat. De gemeentecode komt uit RegioS en niet
+      uit measure GM000B: die heet niet in elk peiljaar hetzelfde en zou
+      2017, 2018, 2019 en 2021 stilzwijgend weggooien.
+    data_tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns: [gemeente_code, peiljaar]
+    columns:
+      - name: gemeente_code
+        data_tests: [not_null]
+      - name: peiljaar
+        description: >
+          Uit de bestandsnaam via regexp, niet uit het pad — in CI is dat
+          tests/fixtures/ in plaats van data/raw/.
+        data_tests: [not_null]
+      - name: gemeente_naam
+        description: >
+          Getrimd. StringValue is opgevuld tot 50 tekens; zonder trim ziet
+          de SCD2 in commit 8 elk jaar een wijziging.
+        data_tests: [not_null]
