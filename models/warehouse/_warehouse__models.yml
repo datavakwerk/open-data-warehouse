@@ -1,0 +1,32 @@
+version: 2
+
+models:
+  - name: dim_datum
+    description: >
+      Eén rij per kalenderdag van 1990-01-01 t/m 2029-12-31, plus één onbekend-lid-rij
+      met datum_key -1. Gegenereerd met dbt_utils.date_spine; feestdagen komen uit de
+      macro nl_feestdagen.
+
+      SLEUTELCONVENTIE. datum_key is een leesbare integer JJJJMMDD (20240315), zodat een
+      mart op datum kan filteren zonder join. Alle andere dimensies gebruiken een md5-hash
+      via dbt_utils.generate_surrogate_key. Het onbekende lid is -1 (integer) hier en
+      '-1' (varchar) in de gehashte dimensies.
+    columns:
+      - name: datum_key
+        description: JJJJMMDD als integer. -1 is het onbekende lid (datum 1900-01-01).
+        data_tests: [unique, not_null]
+      - name: datum
+        data_tests: [unique, not_null]
+      - name: weeknummer
+        description: ISO-weeknummer. Gebruik samen met iso_jaar, niet met jaar — 2029-12-31 valt in ISO-week 1 van 2030.
+      - name: is_feestdag
+        description: >
+          Officiële Nederlandse feestdagen. 438 stuks in het bereik. Bevrijdingsdag telt
+          mee, ook al is die niet elk jaar een vrije dag.
+        data_tests: [not_null]
+      - name: feestdag_naam
+        description: >
+          Null als het geen feestdag is. Op 2005-05-05 en 2016-05-05 staat er
+          'Bevrijdingsdag en Hemelvaartsdag' — twee feestdagen op één datum.
+      - name: is_werkdag
+        description: Maandag t/m vrijdag én geen feestdag. 10.134 van de 14.610 dagen.
