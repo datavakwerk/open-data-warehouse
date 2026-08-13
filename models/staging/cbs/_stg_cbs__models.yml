@@ -20,7 +20,8 @@ models:
         data_tests:
           - not_null
           - accepted_values:
-              values: [Personenauto, Bedrijfsmotorvoertuig, Motorfiets, Bromfiets]
+              arguments:
+                values: [Personenauto, Bedrijfsmotorvoertuig, Motorfiets, Bromfiets]
       - name: aantal
         description: >
           Value staat in de bron als '268240.0'. Cast naar double en dan pas

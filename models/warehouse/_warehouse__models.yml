@@ -66,3 +66,60 @@ models:
           Afgeleid van einddatum_gebrek is null. 788 van de 1.006 codes zijn nog geldig;
           een lege einddatum betekent "nog geldig", niet "onbekend".
         data_tests: [not_null]
+  - name: dim_voertuig
+    description: >
+      Type 1, één rij per kenteken (500.000 + het onbekende lid '-1'). Typekenmerken zijn
+      gedenormaliseerd op de dimensie; er is bewust geen dim_voertuigtype. merk en
+      handelsbenaming zijn genormaliseerd met upper(trim()) — dat hoorde niet in staging,
+      want daar geldt 1:1 met de bron.
+    columns:
+      - name: voertuig_key
+        description: md5 over kenteken. Feiten coalescen naar '-1'.
+        data_tests: [unique, not_null]
+      - name: kenteken
+        data_tests: [unique, not_null]
+      - name: handelsbenaming
+        description: upper(trim()) brengt 27.409 varianten terug naar 27.363.
+      - name: hoofdbrandstof
+        description: >
+          Brandstof van volgnummer 1. NULL voor 69.504 kentekens die geen brandstofrij
+          hebben — aanhangwagens en opleggers. Dat is correct, geen ontbrekende data;
+          daarom staat er geen not_null op.
+      - name: datum_eerste_toelating
+        description: >
+          Gewone date, geen foreign key naar dim_datum. De spine begint in 1990 en deze
+          kolom gaat terug tot 1915-06-30 (32.844 voertuigen vóór 1990).
+  - name: bridge_voertuig_brandstof
+    description: >
+      Eén rij per kenteken per brandstofvolgnummer, 443.167 rijen over 430.496 voertuigen.
+      12.671 voertuigen hebben meer dan één brandstof (hybrides).
+
+      GEBRUIK. dim_voertuig.hoofdbrandstof voor standaardvragen; deze bridge zodra
+      hybrides ertoe doen. Tellen via de bridge zonder filter op is_hoofdbrandstof geeft
+      443.167 in plaats van 430.496 voertuigen — 2,9% te veel.
+    
+    data_tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns: [voertuig_key, volgnummer]
+    columns:
+      - name: voertuig_key
+        data_tests:
+          - not_null
+          - relationships:
+              to: ref('dim_voertuig')
+              field: voertuig_key
+      - name: brandstof_key
+        description: >
+          md5 over brandstof_omschrijving — exact dezelfde expressie als in
+          dim_brandstof. Wijkt de expressie af, dan wijkt de hash af en faalt de
+          relationships-test op elke rij.
+        data_tests:
+          - not_null
+          - relationships:
+              to: ref('dim_brandstof')
+              field: brandstof_key
+      - name: volgnummer
+        description: 1, 2 of 3. Verdeling 430.496 / 12.657 / 14.
+        data_tests: [not_null]
+      - name: is_hoofdbrandstof
+        data_tests: [not_null]
