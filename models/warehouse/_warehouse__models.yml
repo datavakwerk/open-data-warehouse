@@ -123,3 +123,44 @@ models:
         data_tests: [not_null]
       - name: is_hoofdbrandstof
         data_tests: [not_null]
+  - name: dim_gemeente
+    description: >
+      SCD type 2 op de gemeentelijke indeling, opgebouwd uit 12 jaarlijkse CBS-snapshots
+      (2015-2026). 420 versierijen over 414 gemeentecodes, plus het onbekende lid '-1'.
+      342 daarvan zijn actueel; 72 codes zijn sinds 2015 opgeheven.
+
+      VERSIONERING. Alleen gemeente_naam telt als wijziging. agglomeratie_naam wijzigt bij
+      51 codes zonder dat er aan de gemeente iets verandert (CBS herindeelt zijn eigen
+      agglomeraties); die meenemen zou de dimensie op 475 rijen brengen met 55 versierijen
+      zonder gemeentelijke gebeurtenis erachter. agglomeratie_naam en arbeidsmarktregio
+      zijn daarom attributen van de versie, niet de aanleiding ervan — bij een wijziging
+      binnen een versie staat de alfabetisch laatste waarde in de rij.
+
+      GELDIG_TOT. 31-12 van het laatste peiljaar van de versie, of 9999-12-31 voor de
+      actuele versie. Nooit null: een between-join op null geeft geen match en zou elke
+      actuele gemeente stilzwijgend naar '-1' sturen. Deze afleiding leunt erop dat geen
+      enkele code een gat in zijn peiljaren heeft; dat bewaakt
+      assert_gemeente_aaneengesloten_peiljaren.
+    data_tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns: [gemeente_code, versienummer]
+    columns:
+      - name: gemeente_key
+        description: md5 over gemeente_code + versie. Feiten joinen hierop, niet op gemeente_code.
+        data_tests: [unique, not_null]
+      - name: gemeente_code
+        description: CBS-code (GM....). Niet uniek — 6 codes hebben twee versies.
+        data_tests: [not_null]
+      - name: gemeente_naam
+        data_tests: [not_null]
+      - name: geldig_van
+        description: 1 januari van het eerste peiljaar van de versie.
+        data_tests: [not_null]
+      - name: geldig_tot
+        description: 31 december van het laatste peiljaar, of 9999-12-31 als de versie actueel is.
+        data_tests: [not_null]
+      - name: is_actueel
+        description: >
+          True voor de versie die in het laatste peiljaar (2026) nog bestaat. 342 rijen.
+          Join in feiten NOOIT op is_actueel — zie commit 10.
+        data_tests: [not_null]
