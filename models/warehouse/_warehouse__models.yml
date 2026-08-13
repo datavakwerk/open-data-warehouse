@@ -30,3 +30,39 @@ models:
           'Bevrijdingsdag en Hemelvaartsdag' — twee feestdagen op één datum.
       - name: is_werkdag
         description: Maandag t/m vrijdag én geen feestdag. 10.134 van de 14.610 dagen.
+  - name: dim_brandstof
+    description: >
+        Type 1. Eén rij per brandstofsoort uit stg_rdw__brandstof, plus het onbekende lid
+        '-1'. 8 soorten op data/raw (9 rijen), 7 in de CI-fixtures (8 rijen) — Alcohol komt
+        niet voor in de eerste 5.000 kentekens. Zet hier dus geen rijaantaltest op.
+    columns:
+      - name: brandstof_key
+        description: Surrogate key for the brandstof dimension.
+        data_tests: [unique, not_null]
+      - name: brandstof_omschrijving
+        description: Description of the brandstof type.
+        data_tests: [unique, not_null]
+      - name: energiedrager
+        description: >
+          Fossiel / Emissievrij / Biobrandstof. De case heeft bewust geen else-tak: een
+          onbekende negende soort wordt null en maakt
+          assert_brandstof_energiedrager_bekend rood in plaats van stilzwijgend fossiel.
+  - name: dim_gebrek
+    description: >
+      Type 1. Volledige RDW-referentielijst, 1.006 codes plus het onbekende lid '-1'.
+      Slechts 622 codes komen voor in de constateringen (385 in de fixtures); dat is
+      normaal voor een referentielijst. Test relationships van feit naar dimensie, nooit
+      andersom.
+    columns:
+      - name: gebrek_key
+        data_tests: [unique, not_null]
+      - name: gebrek_identificatie
+        data_tests: [unique, not_null]
+      - name: gebrek_omschrijving
+        description: Niet uniek — 1.006 codes delen 972 omschrijvingen.
+        data_tests: [not_null]
+      - name: is_actueel
+        description: >
+          Afgeleid van einddatum_gebrek is null. 788 van de 1.006 codes zijn nog geldig;
+          een lege einddatum betekent "nog geldig", niet "onbekend".
+        data_tests: [not_null]
