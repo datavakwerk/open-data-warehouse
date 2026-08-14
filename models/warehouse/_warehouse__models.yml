@@ -221,3 +221,45 @@ models:
       - name: aantal_gebreken
         description: Altijd 1. Zie de waarschuwing in de modelbeschrijving.
         data_tests: [not_null]
+  - name: fct_voertuigpark_gemeente
+    description: >
+      Periodieke snapshot. KORREL: één rij per gemeente per peiljaar per voertuigsoort.
+      15.936 rijen — 3.984 gemeente-jaren over 2015-2025 maal 4 voertuigsoorten. Identiek
+      in dev en CI, want de fixtures dekken exact dat bereik.
+
+      TEMPORELE JOIN. dim_gemeente wordt gejoind op geldig_van/geldig_tot, niet op
+      is_actueel. Anders verdwijnen de cijfers van de 72 gemeentecodes die sinds 2015 zijn
+      opgeheven en verschuift de historie met terugwerkende kracht.
+
+      PEILJAARFILTER. De ondergrens komt uit dim_gemeente zelf (peiljaar 2015) en staat
+      niet als constante in de code. Zonder dit filter landen 23.910 rijen uit 2000-2014
+      op gemeente_key '-1' — en CI ziet dat niet, want de fixtures bevatten alleen 2015+.
+    data_tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns: [gemeente_code, peiljaar, voertuigsoort]
+    columns:
+      - name: peildatum_key
+        description: FK naar dim_datum, altijd 1 januari van het peiljaar.
+        data_tests:
+          - not_null
+          - relationships:
+              to: ref('dim_datum')
+              field: datum_key
+      - name: gemeente_key
+        description: >
+          FK naar de gemeenteversie die in dat peiljaar geldig was. Nooit '-1' — dat
+          bewaakt assert_voertuigpark_geen_onbekende_gemeente.
+        data_tests:
+          - not_null
+          - relationships:
+              to: ref('dim_gemeente')
+              field: gemeente_key
+      - name: voertuigsoort
+        description: Degenerate dimensie; vier waarden, geen eigen dimensietabel.
+        data_tests:
+          - not_null
+          - accepted_values:
+              values: [Personenauto, Bedrijfsmotorvoertuig, Motorfiets, Bromfiets]
+      - name: aantal
+        description: Aantal voertuigen van die soort in die gemeente op 1 januari van het peiljaar.
+        data_tests: [not_null]

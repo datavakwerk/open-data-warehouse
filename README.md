@@ -36,7 +36,7 @@ in git — `make ingest` haalt hem op.
 
 ```
   RDW / CBS API
-        │  Python ingestie (incrementeel, gepagineerd, met retries)
+        │  Python ingestie (gepagineerd, met retries, reproduceerbaar bereik)
         ▼
    data/raw/*.parquet
         │  dbt seed/source
@@ -68,17 +68,17 @@ Per feittabel staat de **grain** expliciet — één zin, geen interpretatie mog
 
 | Feittabel | grain (één rij per …) | Type | Dimensies |
 | --- | --- | --- | --- |
-| `fct_voertuig_registratie` | kenteken per tenaamstelling | transactie | datum, voertuigtype, brandstof |
-| `fct_gebrek_constatering` | geconstateerd gebrek per keuring per voertuig | transactie | datum, voertuigtype, gebrek |
-| `fct_voertuigpark_gemeente` | gemeente per peiljaar per brandstofsoort | periodieke snapshot | datum, gemeente, brandstof |
+| `fct_gebrek_constatering` | geconstateerd gebrek per keuring per voertuig | transactie | datum, voertuig, gebrek |
+| `fct_voertuigpark_gemeente` | gemeente per peiljaar per voertuigsoort | periodieke snapshot | datum, gemeente |
 
 | Dimensie | SCD | Waarom |
 | --- | --- | --- |
 | `dim_datum` | — | gegenereerd, met NL-feestdagen en kwartaal/weeknummers |
 | `dim_gemeente` | **type 2** | gemeentelijke herindelingen; historische feiten moeten aan de gemeente van tóen hangen |
-| `dim_voertuigtype` | type 1 | merk/handelsbenaming/voertuigsoort; correcties zijn correcties, geen historie |
+| `dim_voertuig` | type 1 | kenteken met gedenormaliseerde typekenmerken; correcties zijn correcties, geen historie |
 | `dim_brandstof` | type 1 | kleine, stabiele referentielijst |
-| `dim_gebrek` | type 1 | RDW-gebrekcode met omschrijving en ernstcategorie |
+| `dim_gebrek` | type 1 | RDW-gebrekcode met omschrijving en geldigheidsperiode |
+| `bridge_voertuig_brandstof` | — | 12.671 voertuigen hebben meer dan één brandstof; de bridge voorkomt dubbeltellen |
 
 ## Snel starten
 
@@ -89,19 +89,24 @@ make build       # dbt build: modellen + tests
 make docs        # dbt docs generate && serve
 ```
 
-`make` zonder argument draait de hele keten van lege map tot bevraagbaar warehouse.
+De hele keten van lege map tot bevraagbaar warehouse is `make install`, `make ingest`,
+`make build`. (`make` zonder argument toont de targets; een `all`-target dat de keten
+aaneenrijgt staat nog open — zie Definition of done.)
 
 ## Ontwerpkeuzes
 
-- **Waarom deze grain.** `fct_voertuig_registratie` staat op tenaamstelling, niet op
-  voertuig: een voertuig wisselt van eigenaar en dat is precies de gebeurtenis die je
-  wilt kunnen tellen. Op voertuigniveau verlies je die.
+- **Waarom deze grain.** `fct_gebrek_constatering` staat op geconstateerd gebrek, niet
+  op keuring: gebreken tellen is dan gewoon `count(*)`. De bronkolom met het
+  keuringtotaal is bewust weggelaten — die herhaalt hetzelfde getal op elke regel van
+  de keuring, en `sum()` telt dan dubbel.
 - **Waarom SCD2 op gemeente.** Nederland herindeelt gemiddeld elk jaar wel iets. Zonder
   type 2 verschuiven historische cijfers met terugwerkende kracht — een klassieke
   stille fout in stuurinformatie.
-- **Waarom incrementeel.** De RDW-voertuigenset is te groot voor een volledige refresh
-  per run. Incrementeel laden met een watermerk op wijzigingsdatum, met een
-  gedocumenteerde `--full-refresh`-route voor als de brondefinitie verandert.
+- **Waarom een deterministisch kentekenbereik.** De volledige RDW-set is ~58 miljoen
+  rijen. De standaardrun bepaalt één op kenteken gesorteerd bereik en haalt álle sets op
+  datzelfde bereik op — één voertuigpopulatie, reproduceerbaar zolang de bron niet
+  wijzigt (zie [docs/data.md](docs/data.md)). Opschalen is één variabele
+  (`SAMPLE_SIZE`).
 - **Waarom DuckDB.** Nul kosten, draait in CI, één bestand om te reviewen. De
   warehouse-keuze is geen onderdeel van de modellering — dat is juist het punt.
 - **Waarom geen dashboardtool met een server.** Een statische Evidence-pagina is
@@ -124,15 +129,15 @@ eigen tests op de grain (geen dubbele rijen per graindefinitie).
 ## Definition of done
 
 - [ ] Repo met ingestie + dbt-project, end-to-end draaibaar met één `make`-commando
-- [ ] ≥ 2 feittabellen en ≥ 4 dimensies, grain gedocumenteerd per feittabel
-- [ ] dbt-tests groen in GitHub Actions bij elke PR
+- [x] ≥ 2 feittabellen en ≥ 4 dimensies, grain gedocumenteerd per feittabel
+- [x] dbt-tests groen in GitHub Actions bij elke PR
 - [ ] README met architectuurdiagram, lineage-screenshot en ontwerpkeuzes
 - [ ] Evidence- of Streamlit-pagina over de marts (optioneel)
 - [ ] Getagde release v1.0
 
 ## Wat dit project laat zien
 
-SQL en dimensioneel modelleren (Kimball) · ELT-pipelines met dbt · incrementele
+SQL en dimensioneel modelleren (Kimball) · ELT-pipelines met dbt · reproduceerbare
 ingestie in Python · datakwaliteitstests · CI/CD en een PR-workflow · een
 warehouse-opzet die overzet naar een cloud data platform.
 
