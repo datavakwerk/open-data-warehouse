@@ -9,7 +9,8 @@ models:
       gemeenten die dat peiljaar niet bestonden.
     data_tests:
       - dbt_utils.unique_combination_of_columns:
-          combination_of_columns: [gemeente_code, peiljaar, voertuigsoort]
+          arguments:
+            combination_of_columns: [gemeente_code, peiljaar, voertuigsoort]
     columns:
       - name: gemeente_code
         data_tests: [not_null]
@@ -36,7 +37,8 @@ models:
       2017, 2018, 2019 en 2021 stilzwijgend weggooien.
     data_tests:
       - dbt_utils.unique_combination_of_columns:
-          combination_of_columns: [gemeente_code, peiljaar]
+          arguments:
+            combination_of_columns: [gemeente_code, peiljaar]
     columns:
       - name: gemeente_code
         data_tests: [not_null]
