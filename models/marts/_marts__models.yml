@@ -23,3 +23,30 @@ models:
       - name: rang
         description: 1 = vaakst geconstateerd binnen voertuigsoort × jaar.
         data_tests: [not_null]
+  - name: mart_voertuigpark_herindeling
+    description: >
+      Eén rij per gemeente per peiljaar per
+      voertuigsoort (15.936 rijen, 2015-2025 — CBS levert nog geen 2026). Reeksen zijn
+      over herindelingen heen vergelijkbaar: gemeente_naam_nu is de nieuwste naam per
+      code (via de laatste SCD2-versie, niet via is_actueel — 72 opgeheven codes hebben
+      geen actuele versie), naam_destijds de naam in het peiljaar zelf.
+
+      BEPERKING. De PRD vraagt "per brandstofsoort per gemeente"; die grain bestaat bij
+      CBS niet (zie docs/data.md). Deze mart levert gemeente × voertuigsoort; de
+      brandstofsplitsing bestaat alleen landelijk via RDW (8 soorten).
+    data_tests:
+      - dbt_utils.unique_combination_of_columns:
+          arguments:
+            combination_of_columns: [gemeente_code, peiljaar, voertuigsoort]
+    columns:
+      - name: gemeente_naam_nu
+        data_tests: [not_null]
+      - name: naam_destijds
+        data_tests: [not_null]
+      - name: bestaat_nog
+        description: >
+          False voor de 72 codes die sinds 2015 zijn opgeheven; hun reeks eindigt in
+          hun laatste peiljaar. Dat is historie, geen datafout.
+        data_tests: [not_null]
+      - name: aantal
+        data_tests: [not_null]
