@@ -50,3 +50,22 @@ models:
         data_tests: [not_null]
       - name: aantal
         data_tests: [not_null]
+  - name: mart_rdw_cbs_aansluiting
+    description: >
+      PRD-vraag 3. Aandeel per voertuigsoort in de RDW-steekproef (500k kentekens,
+      momentopname 2026-07-29) naast het aandeel in het CBS-park (laatst beschikbare
+      peiljaar, nu 2025). Absolute aantallen zijn onvergelijkbaar — de steekproef is
+      ~3,6% van het park — dus de mart vergelijkt verdelingen. Mapping-oordelen:
+      Bus telt als Bedrijfsmotorvoertuig, zijspan als Motorfiets; aanhangwagens,
+      opleggers en landbouwvoertuigen kennen geen CBS-categorie en staan als
+      '(niet vergelijkbaar)' buiten de noemer.
+    columns:
+      - name: voertuigsoort_cbs
+        description: Een nieuwe RDW-soort zonder mapping wordt null en valt hier.
+        data_tests: [unique, not_null]
+      - name: aandeel_rdw
+        description: Aandeel binnen de vergelijkbare soorten; null voor de restgroep.
+      - name: aandeel_cbs
+        description: >
+          Null voor '(niet vergelijkbaar)' — die rij bestaat alleen aan de RDW-kant.
+          Bewust geen not_null: de null ís de informatie.
