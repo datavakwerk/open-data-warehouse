@@ -1,0 +1,25 @@
+version: 2
+
+models:
+  - name: mart_gebrek_top
+    description: >
+      Eén rij per gebrek per voertuigsoort per jaar van eerste toelating,
+      19.703 rijen. aantal_gebreken is optelbaar (som van de constante uit het feit);
+      rang is het rangnummer binnen voertuigsoort × jaar, aflopend op aantal.
+    data_tests:
+      - dbt_utils.unique_combination_of_columns:
+          arguments:
+            combination_of_columns:
+              [gebrek_identificatie, voertuigsoort, jaar_eerste_toelating]
+    columns:
+      - name: gebrek_identificatie
+        data_tests: [not_null]
+      - name: voertuigsoort
+        data_tests: [not_null]
+      - name: jaar_eerste_toelating
+        description: >
+          year(datum_eerste_toelating) — geen bouwjaar; voor importvoertuigen wijken
+          die af. Null als het voertuig geen toelatingsdatum heeft.
+      - name: rang
+        description: 1 = vaakst geconstateerd binnen voertuigsoort × jaar.
+        data_tests: [not_null]
