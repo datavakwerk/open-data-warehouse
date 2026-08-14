@@ -164,3 +164,60 @@ models:
           True voor de versie die in het laatste peiljaar (2026) nog bestaat. 342 rijen.
           Join in feiten NOOIT op is_actueel — zie commit 10.
         data_tests: [not_null]
+      - name: versienummer
+        description: >
+          Dicht genummerd per gemeente_code via row_number() (1, 2, ...). Bewust niet de
+          interne lopende som uit het model — die begint wel bij 1 maar is niet
+          gegarandeerd aaneengesloten. De graintest hierboven draait op deze kolom.
+        data_tests: [not_null]
+      - name: agglomeratie_naam
+        description: >
+          Attribuut van de versie, niet geversioneerd — zie VERSIONERING in de
+          modelbeschrijving. Kan binnen een versie wijzigen; de rij toont de alfabetisch
+          laatste stand. Wil een mart agglomeratie-historie, dan moet hier
+          herversioneerd worden.
+      - name: arbeidsmarktregio
+        description: Wijzigt bij geen enkele code in 2015-2026; feitelijk type 1.
+  - name: fct_gebrek_constatering
+    description: >
+      Transactiefeit. KORREL: één rij per geconstateerd gebrek per keuring per voertuig.
+      Natuurlijke sleutel: kenteken + meld_datum + meld_tijd + gebrek_identificatie.
+      1.333.713 rijen achter 638.995 keuringen.
+
+      MAAT. aantal_gebreken is altijd 1; tel met sum(aantal_gebreken) of count(*). De
+      bronkolom aantal_gebreken_geconstateerd is bewust NIET overgenomen: die bevat het
+      aantal gebreken van de hele keuring, herhaald op elke regel, en optellen geeft
+      kwadratische onzin. Keuringen tel je met
+      count(distinct kenteken || meld_datum || meld_tijd).
+    data_tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            [kenteken, meld_datum, meld_tijd, gebrek_identificatie]
+    columns:
+      - name: meld_datum_key
+        description: FK naar dim_datum. -1 is het onbekende lid; komt in deze set niet voor.
+        data_tests:
+          - not_null
+          - relationships:
+              to: ref('dim_datum')
+              field: datum_key
+      - name: voertuig_key
+        data_tests:
+          - not_null
+          - relationships:
+              to: ref('dim_voertuig')
+              field: voertuig_key
+      - name: gebrek_key
+        data_tests:
+          - not_null
+          - relationships:
+              to: ref('dim_gebrek')
+              field: gebrek_key
+      - name: meld_tijd
+        description: >
+          HHMM, degenerate dimensie. Dezelfde lpad-kolom als in staging — pak hier nooit
+          de ruwe bronkolom, dan wijkt de korrel af.
+        data_tests: [not_null]
+      - name: aantal_gebreken
+        description: Altijd 1. Zie de waarschuwing in de modelbeschrijving.
+        data_tests: [not_null]
