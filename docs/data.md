@@ -83,8 +83,8 @@ hoort een letterlijke kopie van de bron te zijn.
 
 ## Bekende beperking: brandstof per gemeente bestaat niet bij CBS
 
-De README beschrijft `fct_voertuigpark_gemeente` met de grain *gemeente per peiljaar
-per brandstofsoort*. Die grain is bij CBS niet te maken:
+De beoogde grain voor `fct_voertuigpark_gemeente` was *gemeente per peiljaar per
+brandstofsoort*. Die grain is bij CBS niet te maken:
 
 - De tabellen **Motorvoertuigenpark** (`85235NED`, `7374hvv`) gaan niet lager dan
   provincie — ze bevatten geen enkele gemeentecode.
@@ -96,6 +96,13 @@ per brandstofsoort*. Die grain is bij CBS niet te maken:
 
 Beide zijn opgehaald, zodat de keuze open ligt: gemeente × voertuigsoort, óf
 provincie × brandstof. Gemeente × brandstof kan niet zonder cijfers te verzinnen.
+
+**De gemaakte keuze: gemeente × voertuigsoort uit `70072ned`.** `fct_voertuigpark_gemeente`
+staat op de grain *gemeente per peiljaar per voertuigsoort*. De gemeentelijke invalshoek
+weegt zwaarder dan de brandstofsplitsing, omdat de temporele koppeling aan de
+SCD2-gemeentedimensie het punt van dit feit is. `85237NED` is daarmee wél opgehaald maar
+wordt nergens gebruikt — dat is een bewuste keuze, geen vergeten bestand; een later feit
+op provincie × brandstof kan er alsnog uit worden gebouwd.
 
 ## De gemeentedimensie
 
