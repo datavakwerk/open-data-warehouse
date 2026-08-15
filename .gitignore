@@ -3,6 +3,9 @@
 data/raw/*
 !data/raw/_manifest.json
 
+# Afgeleide exports voor Power BI (`make exports`); net als data/raw niet in git.
+exports/
+
 .venv/
 __pycache__/
 *.pyc

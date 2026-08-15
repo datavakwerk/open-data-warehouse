@@ -10,7 +10,7 @@ SAMPLE_SIZE ?= 500000
 # Aantal kentekens in de CI-fixtures. 5000 komt uit op ~1,7 MB in git.
 FIXTURE_KENTEKENS ?= 5000
 
-.PHONY: all help install ingest ingest-rdw ingest-cbs fixtures lint build docs ci clean
+.PHONY: all help install ingest ingest-rdw ingest-cbs fixtures lint build docs ci clean exports
 
 help:  ## Toon de beschikbare targets
 	@grep -E '^[a-zA-Z_-]+:.*?## ' $(MAKEFILE_LIST) \
@@ -49,6 +49,9 @@ build:  ## dbt build op data/raw: modellen en tests
 docs:  ## dbt docs genereren en serveren
 	$(DBT) docs generate
 	$(DBT) docs serve
+
+exports:  ## Warehouse-tabellen naar exports/ als parquet (voor Power BI)
+	$(PYTHON) scripts/export_warehouse.py
 
 # Zelfde commando's als .github/workflows/ci.yml, zodat CI niets kan wat jij niet kunt.
 ci: lint  ## Precies wat GitHub Actions doet, maar lokaal (op de fixtures)

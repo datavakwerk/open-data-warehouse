@@ -135,7 +135,7 @@ eigen tests op de grain (geen dubbele rijen per graindefinitie).
 - [x] dbt-tests groen in GitHub Actions bij elke PR
 - [x] README met architectuurdiagram, lineage-screenshot en ontwerpkeuzes
 - [ ] Evidence- of Streamlit-pagina over de marts (optioneel)
-- [ ] Getagde release v1.0
+- [x] Getagde release v1.0
 
 ## Wat dit project laat zien
 
