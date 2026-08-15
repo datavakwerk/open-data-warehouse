@@ -100,14 +100,16 @@ models:
     
     data_tests:
       - dbt_utils.unique_combination_of_columns:
-          combination_of_columns: [voertuig_key, volgnummer]
+          arguments:
+            combination_of_columns: [voertuig_key, volgnummer]
     columns:
       - name: voertuig_key
         data_tests:
           - not_null
           - relationships:
-              to: ref('dim_voertuig')
-              field: voertuig_key
+              arguments:
+                to: ref('dim_voertuig')
+                field: voertuig_key
       - name: brandstof_key
         description: >
           md5 over brandstof_omschrijving — exact dezelfde expressie als in
@@ -116,8 +118,9 @@ models:
         data_tests:
           - not_null
           - relationships:
-              to: ref('dim_brandstof')
-              field: brandstof_key
+              arguments:
+                to: ref('dim_brandstof')
+                field: brandstof_key
       - name: volgnummer
         description: 1, 2 of 3. Verdeling 430.496 / 12.657 / 14.
         data_tests: [not_null]
@@ -143,7 +146,8 @@ models:
       assert_gemeente_aaneengesloten_peiljaren.
     data_tests:
       - dbt_utils.unique_combination_of_columns:
-          combination_of_columns: [gemeente_code, versienummer]
+          arguments:
+            combination_of_columns: [gemeente_code, versienummer]
     columns:
       - name: gemeente_key
         description: md5 over gemeente_code + versie. Feiten joinen hierop, niet op gemeente_code.
@@ -191,28 +195,32 @@ models:
       count(distinct kenteken || meld_datum || meld_tijd).
     data_tests:
       - dbt_utils.unique_combination_of_columns:
-          combination_of_columns:
-            [kenteken, meld_datum, meld_tijd, gebrek_identificatie]
+          arguments:
+            combination_of_columns:
+              [kenteken, meld_datum, meld_tijd, gebrek_identificatie]
     columns:
       - name: meld_datum_key
         description: FK naar dim_datum. -1 is het onbekende lid; komt in deze set niet voor.
         data_tests:
           - not_null
           - relationships:
-              to: ref('dim_datum')
-              field: datum_key
+              arguments:
+                to: ref('dim_datum')
+                field: datum_key
       - name: voertuig_key
         data_tests:
           - not_null
           - relationships:
-              to: ref('dim_voertuig')
-              field: voertuig_key
+              arguments:
+                to: ref('dim_voertuig')
+                field: voertuig_key
       - name: gebrek_key
         data_tests:
           - not_null
           - relationships:
-              to: ref('dim_gebrek')
-              field: gebrek_key
+              arguments:
+                to: ref('dim_gebrek')
+                field: gebrek_key
       - name: meld_tijd
         description: >
           HHMM, degenerate dimensie. Dezelfde lpad-kolom als in staging — pak hier nooit
@@ -236,15 +244,17 @@ models:
       op gemeente_key '-1' — en CI ziet dat niet, want de fixtures bevatten alleen 2015+.
     data_tests:
       - dbt_utils.unique_combination_of_columns:
-          combination_of_columns: [gemeente_code, peiljaar, voertuigsoort]
+          arguments:
+            combination_of_columns: [gemeente_code, peiljaar, voertuigsoort]
     columns:
       - name: peildatum_key
         description: FK naar dim_datum, altijd 1 januari van het peiljaar.
         data_tests:
           - not_null
           - relationships:
-              to: ref('dim_datum')
-              field: datum_key
+              arguments:
+                to: ref('dim_datum')
+                field: datum_key
       - name: gemeente_key
         description: >
           FK naar de gemeenteversie die in dat peiljaar geldig was. Nooit '-1' — dat
@@ -252,14 +262,16 @@ models:
         data_tests:
           - not_null
           - relationships:
-              to: ref('dim_gemeente')
+              arguments:
+                to: ref('dim_gemeente')
               field: gemeente_key
       - name: voertuigsoort
         description: Degenerate dimensie; vier waarden, geen eigen dimensietabel.
         data_tests:
           - not_null
           - accepted_values:
-              values: [Personenauto, Bedrijfsmotorvoertuig, Motorfiets, Bromfiets]
+              arguments:
+                values: [Personenauto, Bedrijfsmotorvoertuig, Motorfiets, Bromfiets]
       - name: aantal
         description: Aantal voertuigen van die soort in die gemeente op 1 januari van het peiljaar.
         data_tests: [not_null]
