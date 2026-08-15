@@ -95,6 +95,29 @@ make docs        # dbt docs generate && serve
 `make` zonder argument toont de targets — bewust, want een kale `make` die ongevraagd
 een half uur gaat ingesten is onvriendelijker dan een die eerst laat zien wat er kan.
 
+## Power BI
+
+Een Power BI-rapport ([`powerbi/open-data-warehouse.pbix`](powerbi/open-data-warehouse.pbix))
+beantwoordt de drie businessvragen rechtstreeks op het sterschema. Het semantisch
+model spiegelt het schema en repareert het niet: relaties 1:\* van dimensie naar
+feit met enkelzijdig kruisfilter, behalve de bridge — die staat als many-to-many
+met één bidirectioneel kruisfilter, zodat "gebreken per energiedrager" werkt
+zonder dubbeltellen. De SCD2-gemeentedimensie hangt aan het snapshotfeit via de
+**surrogaatsleutel**, waardoor de temporele join uit het warehouse behouden
+blijft. De DAX-measures spiegelen de marts (som over de maat `aantal_gebreken`,
+soortenmapping en laatste peiljaar voor de RDW/CBS-vergelijking) en de totalen
+zijn gekruist met `dbt show`.
+
+![Voertuigpark per gemeente en peiljaar, met heringedeelde gemeente](docs/img/powerbi-voertuigpark.png)
+
+![Top-gebreken per voertuigsoort en bouwjaar, met energiedrager-slicer](docs/img/powerbi-gebreken.png)
+
+![RDW-steekproef naast CBS-park per voertuigsoort](docs/img/powerbi-rdw-cbs.png)
+
+Zelf openen: `make build && make exports`, open het `.pbix` in Power BI Desktop
+en pas de Power Query-parameter `ExportsMap` aan naar het eigen pad van
+`exports/`.
+
 ## Ontwerpkeuzes
 
 - **Waarom deze grain.** `fct_gebrek_constatering` staat op geconstateerd gebrek, niet
