@@ -34,33 +34,30 @@ in git — `make ingest` haalt hem op.
 
 ## Architectuur
 
-```
-  RDW / CBS API
-        │  Python ingestie (gepagineerd, met retries, reproduceerbaar bereik)
-        ▼
-   data/raw/*.parquet
-        │  dbt seed/source
-        ▼
-  ┌─────────────────────────────────────────────┐
-  │ DuckDB                                       │
-  │                                              │
-  │  staging/    1:1 met de bron, hernoemd,      │
-  │              getypeerd, gededuped            │
-  │      ▼                                       │
-  │  warehouse/  dim_* en fct_* (Kimball)        │
-  │      ▼                                       │
-  │  marts/      businessvragen, brede tabellen  │
-  └─────────────────────────────────────────────┘
-        │
-        ▼
-  dbt tests · dbt docs (lineage) · Evidence-pagina
+```mermaid
+flowchart TD
+    api["RDW / CBS API"]
+    raw["data/raw/*.parquet + _manifest.json"]
+    stg["staging/ — 1:1 met de bron: getypeerd, hernoemd, gededuped"]
+    wh["warehouse/ — dim_* en fct_* (Kimball)"]
+    marts["marts/ — de businessvragen"]
+    tests["dbt tests · dbt docs · CI"]
+
+    api -->|"Python-ingestie: gepagineerd, retries, reproduceerbaar bereik"| raw
+    raw -->|"dbt sources"| stg
+    stg --> wh
+    wh --> marts
+    wh --> tests
+    marts --> tests
 ```
 
 DuckDB omdat het gratis is en in CI draait. Hetzelfde dbt-project richt zich met een
 ander profiel op Snowflake of Databricks; de modellen zijn daarop geschreven (geen
 DuckDB-specifieke SQL buiten `staging/`).
 
-<!-- TODO: architectuurdiagram + screenshot van de dbt-lineagegraaf toevoegen -->
+De lineage zoals dbt hem uit de `ref()`'s afleidt (stand: commit 15, incl. marts):
+
+![dbt-lineage van sources tot marts](docs/img/lineage.png)
 
 ## Het sterschema
 
@@ -83,15 +80,20 @@ Per feittabel staat de **grain** expliciet — één zin, geen interpretatie mog
 ## Snel starten
 
 ```bash
+make all         # hele keten: install -> ingest (alleen bij lege data/raw/) -> build
+```
+
+Of stap voor stap:
+
+```bash
 make install     # dependencies (uv/pip) + dbt packages
 make ingest      # haalt een snapshot op naar data/raw/
 make build       # dbt build: modellen + tests
 make docs        # dbt docs generate && serve
 ```
 
-De hele keten van lege map tot bevraagbaar warehouse is `make install`, `make ingest`,
-`make build`. (`make` zonder argument toont de targets; een `all`-target dat de keten
-aaneenrijgt staat nog open — zie Definition of done.)
+`make` zonder argument toont de targets — bewust, want een kale `make` die ongevraagd
+een half uur gaat ingesten is onvriendelijker dan een die eerst laat zien wat er kan.
 
 ## Ontwerpkeuzes
 
@@ -128,10 +130,10 @@ eigen tests op de grain (geen dubbele rijen per graindefinitie).
 
 ## Definition of done
 
-- [ ] Repo met ingestie + dbt-project, end-to-end draaibaar met één `make`-commando
+- [x] Repo met ingestie + dbt-project, end-to-end draaibaar met één `make`-commando
 - [x] ≥ 2 feittabellen en ≥ 4 dimensies, grain gedocumenteerd per feittabel
 - [x] dbt-tests groen in GitHub Actions bij elke PR
-- [ ] README met architectuurdiagram, lineage-screenshot en ontwerpkeuzes
+- [x] README met architectuurdiagram, lineage-screenshot en ontwerpkeuzes
 - [ ] Evidence- of Streamlit-pagina over de marts (optioneel)
 - [ ] Getagde release v1.0
 

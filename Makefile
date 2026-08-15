@@ -10,11 +10,17 @@ SAMPLE_SIZE ?= 500000
 # Aantal kentekens in de CI-fixtures. 5000 komt uit op ~1,7 MB in git.
 FIXTURE_KENTEKENS ?= 5000
 
-.PHONY: help install ingest ingest-rdw ingest-cbs fixtures lint build docs ci clean
+.PHONY: all help install ingest ingest-rdw ingest-cbs fixtures lint build docs ci clean
 
 help:  ## Toon de beschikbare targets
 	@grep -E '^[a-zA-Z_-]+:.*?## ' $(MAKEFILE_LIST) \
 		| awk 'BEGIN {FS = ":.*?## "}; {printf "  \033[36m%-12s\033[0m %s\n", $$1, $$2}'
+
+# .DEFAULT_GOAL blijft help: een kale `make` die ongevraagd een half uur gaat
+# ingesten is onvriendelijker dan een die de targets toont.
+all: install  ## Hele keten: install -> ingest (alleen bij lege data/raw/) -> build
+	@test -f data/raw/_manifest.json || $(MAKE) ingest
+	$(MAKE) build
 
 install:  ## Maak de virtualenv en installeer de dependencies
 	python3 -m venv .venv
