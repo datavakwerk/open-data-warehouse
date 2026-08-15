@@ -26,14 +26,16 @@ models:
       meer dan één (hybrides); die worden in commit 7 een bridge.
     data_tests:
       - dbt_utils.unique_combination_of_columns:
-          combination_of_columns: [kenteken, brandstof_volgnummer]
+          arguments:
+            combination_of_columns: [kenteken, brandstof_volgnummer]
     columns:
       - name: kenteken
         data_tests:
           - not_null
           - relationships:
-              to: ref('stg_rdw__voertuigen')
-              field: kenteken
+              arguments:
+                to: ref('stg_rdw__voertuigen')
+                field: kenteken
       - name: brandstof_volgnummer
         description: 1, 2 of 3. Volgnummer 1 is de hoofdbrandstof.
         data_tests: [not_null]
@@ -49,15 +51,17 @@ models:
       gebrek 205), dus 1.333.713 in plaats van 1.333.714.
     data_tests:
       - dbt_utils.unique_combination_of_columns:
-          combination_of_columns:
-            [kenteken, meld_datum, meld_tijd, gebrek_identificatie]
+          arguments:
+            combination_of_columns:
+              [kenteken, meld_datum, meld_tijd, gebrek_identificatie]
     columns:
       - name: kenteken
         data_tests:
           - not_null
           - relationships:
-              to: ref('stg_rdw__voertuigen')
-              field: kenteken
+              arguments:
+                to: ref('stg_rdw__voertuigen')
+                field: kenteken
       - name: meld_tijd
         description: >
           HHMM, links opgevuld met nullen. De bron levert 3 tekens voor tijden
@@ -67,8 +71,9 @@ models:
         data_tests:
           - not_null
           - relationships:
-              to: ref('stg_rdw__gebreken')
-              field: gebrek_identificatie
+              arguments:
+                to: ref('stg_rdw__gebreken')
+                field: gebrek_identificatie
       - name: aantal_gebreken_keuring
         description: >
           NIET OPTELBAAR. Het aantal gebreken van de héle keuring, herhaald op
