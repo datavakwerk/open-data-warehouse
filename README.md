@@ -1,4 +1,4 @@
-# open-data-warehouse
+# nl-vehicle-warehouse
 
 **End-to-end ELT-platform op Nederlandse open data, met een gedocumenteerd
 Kimball-sterschema.**
@@ -97,7 +97,7 @@ een half uur gaat ingesten is onvriendelijker dan een die eerst laat zien wat er
 
 ## Power BI
 
-Een Power BI-rapport ([`powerbi/open-data-warehouse.pbix`](powerbi/open-data-warehouse.pbix))
+Een Power BI-rapport ([`powerbi/nl-vehicle-warehouse.pbix`](powerbi/nl-vehicle-warehouse.pbix))
 beantwoordt de drie businessvragen rechtstreeks op het sterschema. Het semantisch
 model spiegelt het schema en repareert het niet: relaties 1:\* van dimensie naar
 feit met enkelzijdig kruisfilter, behalve de bridge — die staat als many-to-many

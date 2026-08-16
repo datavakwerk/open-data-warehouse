@@ -20,7 +20,7 @@ import requests
 ROOT = Path(__file__).resolve().parent.parent
 RAW_DIR = ROOT / "data" / "raw"
 
-USER_AGENT = "open-data-warehouse/0.1 (ingestie; open data)"
+USER_AGENT = "nl-vehicle-warehouse/0.1 (ingestie; open data)"
 MAX_RETRIES = 5
 BACKOFF_BASE = 2.0
 

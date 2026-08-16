@@ -1,6 +1,6 @@
 # Dit profiel staat bewust in de repo, niet in ~/.dbt/. Het pad naar de database is
 # relatief, dus `dbt build` werkt in CI zonder extra setup. *.duckdb is gitignored.
-open_data_warehouse:
+nl_vehicle_warehouse:
   target: dev
   outputs:
     dev:

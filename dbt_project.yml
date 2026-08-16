@@ -1,8 +1,8 @@
-name: 'open_data_warehouse'
+name: 'nl_vehicle_warehouse'
 version: '1.0.0'
 config-version: 2
 
-profile: 'open_data_warehouse'
+profile: 'nl_vehicle_warehouse'
 
 model-paths: ["models"]
 analysis-paths: ["analyses"]
@@ -16,7 +16,7 @@ clean-targets:
   - "dbt_packages"
 
 models:
-  open_data_warehouse:
+  nl_vehicle_warehouse:
     staging:
       +materialized: view
     warehouse:
